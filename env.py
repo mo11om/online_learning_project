@@ -2,9 +2,9 @@
 
 
  
-from re import S
+ 
 import numpy as np
-import math  
+ 
 import random 
 
 class player :
