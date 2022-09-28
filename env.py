@@ -3,12 +3,13 @@
 
  
  
+from importlib.resources import path
 import numpy as np
  
 import random 
 
 class player :
-     def  create_random(self):#3 
+     def  create_random(self):#romdom crate posssibility
           # print(self.path_num)
           
           tmp = np.zeros ((1,self.path_num-1))
@@ -40,40 +41,63 @@ class player :
      def __init__(self,path_num) :
           self.path_num=path_num
 
-          self.possibility =self.create_random()     
-     def get_possibility (self):
-          
+          self.possibility = np.ones(path_num)
+          self.possibility=self.possibility/path_num
+          #self.create_random()     
+     def get_possibility (self):#[poss1 , poss2, poss3]
           return self.possibility
 
 class all_player :
      def __init__(self,player_num,path_num):
           self.player_list=list()
-          self.num_player = player_num
+          self.player_num = player_num
           for i in range(player_num):
                self.player_list .append(player(path_num)) 
           self.player_list=np.asarray(self.player_list)
 
      def player_print (self):
            
-          for i in range(self.num_player):
+          for i in range(self.player_num):
              print(i,self.player_list[i].get_possibility() )
 
 
 
           
 class path_cost_function:
-     def __init__(self,cost_value,path_num ):     
+     def __init__(self,cost_value,path_num,player_num ):     
           self.cost_func=list()
           self.path_num=path_num
-          self.player_cost=list() 
+          self.player_cost=np.zeros(player_num)
           for i in cost_value:
                self.cost_func.append(np.poly1d(i))
      def get_cost_func (self):
           
           return self.cost_func
+     def random_select_cost(self,players):
+          path=np.zeros(self.path_num)
+
+          
+          total_path_select= {new_list: [] for new_list in range(self.path_num)}
+          for i in range (players.player_num):
+               tmp=np.random.choice(a=3,size=1,p=players.player_list[i].possibility)
+                
+                
+               total_path_select[tmp[0]].append(i)
+          
+
+          print(total_path_select)
+          for key ,value in total_path_select.items():
+               # print(key, type(key),value)
+               tmp_cost=self.cost_func[key](len(value))
+               for player in value:
+                    # print(player,type(player))
+                    # print(tmp_cost)
+                    self.player_cost[player]=tmp_cost       
+
+               
      def get_cost(self,players):
-          player_cost= list ()
-          for people in range(players.num_player):
+           
+          for people in range(players.player_num):
                tmp = list()
                for poss in range(self.path_num):
                     n=self.cost_func[poss](players.player_list[people].possibility[poss] )
@@ -88,7 +112,7 @@ if __name__ == '__main__':
           [3,2],
           [4,0]]
      #n1=player(3)
-     n2=path_cost_function(cost,3)
+     n2=path_cost_function(cost,3,6)
      #res = n1.possibility.dot( n2.cost_func)
      # # print (n1.get_possibility())
      
@@ -99,7 +123,7 @@ if __name__ == '__main__':
      #print ("res",res)
      n=all_player(6,3)
      n.player_print()
-     n2.get_cost(n)
+     n2.random_select_cost(n)
      print(n2.player_cost)
      #n.player_print()
 
