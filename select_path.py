@@ -22,4 +22,5 @@ def  refresh_strategy(past_cost , past_strategy, times, learn_rate) :
         strategy = strategy - gradient
         print(strategy)
     new_strategy = panning(strategy) 
-    return new_strategy         
+    return new_strategy
+    #rera   
