@@ -20,7 +20,6 @@ def  refresh_strategy(past_cost , past_strategy, times, learn_rate) :
     for i in range(times): #moving times 
         gradient = past_cost + (2/learn_rate)*(strategy - past_strategy)
         strategy = strategy - gradient
-        print(strategy)
     new_strategy = panning(strategy) 
     return new_strategy
     #rera   
