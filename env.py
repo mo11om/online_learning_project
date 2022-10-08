@@ -3,7 +3,7 @@ import random
 import select_path
 
 class player :
-     def  create_random(self):#romdom crate posssibility
+     def  create_random(self) : #romdom crate posssibility
           # print(self.path_num)
           tmp = np.zeros ((1,self.path_num-1))
           rdtmp = 0
@@ -22,69 +22,66 @@ class player :
           tmp = tmp/100
           return tmp
 
-     def __init__(self,path_num) : 
+     def __init__(self, path_num) : 
           self.path_num = path_num
-          self.possibility = np.ones(path_num)/path_num
+          self.probability = np.ones(path_num)/path_num
           #self.create_random()     
-     def get_possibility (self) : #[poss1 , poss2, poss3]
-          return self.possibility
+     def get_probability (self) : #[poss1 , poss2, poss3]
+          return self.probability
+
 
 class all_player :
-     def __init__(self,player_num,path_num) :
-          self.player_list = list()
+     def __init__(self, player_num, path_num) :
+          self.players_strategy = list()
           self.player_num = player_num
           for i in range(player_num) : 
-               self.player_list .append(player(path_num)) 
-          self.player_list = np.asarray(self.player_list)
+               self.players_strategy .append(player(path_num)) 
+          self.players_strategy = np.asarray(self.players_strategy)
 
-     def all_player_possibility(self) : #naming it "all_player_possibility" is batter
+     def all_player_probability(self) : 
           for i in range(self.player_num) :
-             print(i,self.player_list[i].get_possibility() )
+             print(i,self.players_strategy[i].get_probability())
 
 
-
-          
-class path_cost_function(all_player) :
-     def __init__(self,coefficient,path_num,player_num) :  #changing "cost_value" to "coefficient" is better
+class congestion_game(all_player) :
+     def __init__(self,coefficient,path_num,player_num) : 
           self.cost_func = list()
           self.path_num = path_num
           self.path_cost = np.zeros(path_num) 
-          all_player.__init__(self,player_num=player_num,path_num=path_num)
-          #the function of this array is to record all path cost instead of each player's cost
-          #(because our setting is full information, all players share the exaclty same cost information no matter which path each of they selects)
-          # therefore, changing name from "player_cost" to "path_cost" and parameter from "player_num" to "path_num" is better
+          all_player.__init__(self, player_num = player_num, path_num = path_num)
           for i in coefficient :
                self.cost_func.append(np.poly1d(i))
      
      def get_cost_func (self) :
           return self.cost_func
      
-     def random_select_cost(self ) : 
+     def random_select_cost(self) : 
           total_path_select = {new_list: [] for new_list in range(self.path_num)} #creat empty dict => {0:[], 1:[], 2:[]}
           for i in range (self.player_num) :
-               choice_path = np.random.choice(a = self.path_num,size = 1,p = self.player_list[i].possibility)
+               choice_path = np.random.choice(a = self.path_num,size = 1,p = self.players_strategy[i].probability)
                total_path_select[choice_path[0]].append(i)
-          # print(total_path_select)
-          for key ,value in total_path_select.items() :
-               path_cost = self.cost_func[key](len(value)) #calculate path cost
-               self.path_cost[key] = path_cost    #change   
+          for path ,driver in total_path_select.items() :
+               path_cost = self.cost_func[path](len(driver)) #calculate path cost
+               self.path_cost[path] = path_cost   
+          print("paths cost : ", self.path_cost)
 
-
-
-
-
+     def update_strategy(self, times, learn_rate) :
+          for i in range(self.player_num) :
+               self.players_strategy[i].probability = select_path.refresh_strategy(self.path_cost, self.players_strategy[i].probability, times, learn_rate)
+               print("strategy of: ",i, self.players_strategy[i].probability)
+          
 if __name__ == '__main__' :
-     coefficient =[[2,3],[3,2],[4,0]]
-     player_number = 6
-     path_number = 3
-     #_all_palyer = all_player(player_number, path_number)
-     # a = all_player.all_player_possibility(_all_palyer)
-     
-     path_cost = path_cost_function(coefficient, path_number, player_number)
-     path_cost.random_select_cost( )
-     path_cost.all_player_possibility()
-
-     print(path_cost.path_cost)
+     coefficient =[[6,3,6],[3,7,2],[2,9,0], [4,6,5], [7,2,2], [5,8,0], [3,3,3]]
+     player_number = 10
+     path_number = 7
+     gradient_times = 100
+     learn_rate = 10
+     T = 10
+     game = congestion_game(coefficient, path_number, player_number)
+     for i in range(0, T) :
+          print("T = ",i)
+          game.random_select_cost()
+          game.update_strategy(gradient_times, learn_rate)
 
 
 
