@@ -44,11 +44,12 @@ class all_player :
 
 
           
-class path_cost_function :
+class path_cost_function(all_player) :
      def __init__(self,coefficient,path_num,player_num) :  #changing "cost_value" to "coefficient" is better
           self.cost_func = list()
           self.path_num = path_num
           self.path_cost = np.zeros(path_num) 
+          all_player.__init__(self,player_num=player_num,path_num=path_num)
           #the function of this array is to record all path cost instead of each player's cost
           #(because our setting is full information, all players share the exaclty same cost information no matter which path each of they selects)
           # therefore, changing name from "player_cost" to "path_cost" and parameter from "player_num" to "path_num" is better
@@ -58,25 +59,17 @@ class path_cost_function :
      def get_cost_func (self) :
           return self.cost_func
      
-     def random_select_cost(self,players) : 
+     def random_select_cost(self ) : 
           total_path_select = {new_list: [] for new_list in range(self.path_num)} #creat empty dict => {0:[], 1:[], 2:[]}
-          for i in range (players.player_num) :
-               choice_path = np.random.choice(a = self.path_num,size = 1,p = players.player_list[i].possibility)
+          for i in range (self.player_num) :
+               choice_path = np.random.choice(a = self.path_num,size = 1,p = self.player_list[i].possibility)
                total_path_select[choice_path[0]].append(i)
           # print(total_path_select)
           for key ,value in total_path_select.items() :
                path_cost = self.cost_func[key](len(value)) #calculate path cost
                self.path_cost[key] = path_cost    #change   
 
-     #this function seems unnecessary?          
-     def get_cost(self,players) :
-          for people in range(players.player_num) :
-               tmp = list()
-               for poss in range(self.path_num) :
-                    n = self.cost_func[poss](players.player_list[people].possibility[poss] )
-                    tmp.append(n)
-               self.player_cost.append(tmp)
-          self.player_cost = np.asarray(self.player_cost)
+
 
 
 
@@ -84,9 +77,14 @@ if __name__ == '__main__' :
      coefficient =[[2,3],[3,2],[4,0]]
      player_number = 6
      path_number = 3
-     all_palyer = all_player(player_number, path_number)
-     # a = all_player.all_player_possibility()
-     # path_cost = path_cost_function(coefficient, path_number, player_number)
+     #_all_palyer = all_player(player_number, path_number)
+     # a = all_player.all_player_possibility(_all_palyer)
+     
+     path_cost = path_cost_function(coefficient, path_number, player_number)
+     path_cost.random_select_cost( )
+     path_cost.all_player_possibility()
+
+     print(path_cost.path_cost)
 
 
 
