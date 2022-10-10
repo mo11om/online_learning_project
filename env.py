@@ -14,7 +14,7 @@ class player :
                     continue
                tmp[0][total_num-1] = rdtmp
                total_num = total_num-1
-          tmp = np.append(tmp ,np.array( 100))
+          tmp = np.append(tmp ,np.array(100))
           tmp.sort()
           for i in range(self.path_num-1,0,-1) : 
                if i != 0:
@@ -60,28 +60,30 @@ class congestion_game(all_player) :
           for i in range (self.player_num) :
                choice_path = np.random.choice(a = self.path_num,size = 1,p = self.players_strategy[i].probability)
                total_path_select[choice_path[0]].append(i)
+          print("path distribution : ", total_path_select)
           for path ,driver in total_path_select.items() :
                path_cost = self.cost_func[path](len(driver)) #calculate path cost
                self.path_cost[path] = path_cost   
-          print("paths cost : ", self.path_cost)
+          return self.path_cost
 
-     def update_strategy(self, times, learn_rate) :
+     def update_strategy(self, times, learn_rate, scale) :
           for i in range(self.player_num) :
-               self.players_strategy[i].probability = select_path.refresh_strategy(self.path_cost, self.players_strategy[i].probability, times, learn_rate)
-               print("strategy of: ",i, self.players_strategy[i].probability)
+               self.players_strategy[i].probability = select_path.refresh_strategy(self.path_cost, self.players_strategy[i].probability, times, learn_rate, scale)
+          return self.players_strategy[0].probability
           
 if __name__ == '__main__' :
-     coefficient =[[6,3,6],[3,7,2],[2,9,0], [4,6,5], [7,2,2], [5,8,0], [3,3,3]]
-     player_number = 10
-     path_number = 7
+     coefficient =[[2.2,3], [4,1], [0.5,4]]
+     player_number = 6
+     path_number = 3
      gradient_times = 100
-     learn_rate = 10
+     learn_rate = 3
      T = 10
+     scale = 50
      game = congestion_game(coefficient, path_number, player_number)
      for i in range(0, T) :
           print("T = ",i)
-          game.random_select_cost()
-          game.update_strategy(gradient_times, learn_rate)
+          print("path cost : ",game.random_select_cost())
+          print("strategy : ", game.update_strategy(gradient_times, learn_rate, scale))
 
 
 
