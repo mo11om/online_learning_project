@@ -20,12 +20,13 @@ class player :
                if i != 0:
                     tmp [i] = tmp [i]-tmp[i-1]            
           tmp = tmp/100
+          print(tmp)
           return tmp
 
      def __init__(self, path_num) : 
           self.path_num = path_num
           self.probability = np.ones(path_num)/path_num
-          #self.create_random()     
+          self.probability = self.create_random()     
      def get_probability (self) : #[poss1 , poss2, poss3]
           return self.probability
 
@@ -64,26 +65,29 @@ class congestion_game(all_player) :
           for path ,driver in total_path_select.items() :
                path_cost = self.cost_func[path](len(driver)) #calculate path cost
                self.path_cost[path] = path_cost   
+          print("path cost : ", self.path_cost)
           return self.path_cost
 
      def update_strategy(self, times, learn_rate, scale) :
           for i in range(self.player_num) :
+               # print("check", self.players_strategy[i].probability)
                self.players_strategy[i].probability = select_path.refresh_strategy(self.path_cost, self.players_strategy[i].probability, times, learn_rate, scale)
+               print("player ", i, " strategy : ",  self.players_strategy[i].probability)
           return self.players_strategy[0].probability
           
 if __name__ == '__main__' :
-     coefficient =[[2.2,3], [4,1], [0.5,4]]
+     coefficient =[[2.2,3], [1,0.3],  [0.6,5], [3,2]]
      player_number = 6
-     path_number = 3
+     path_number = 4
      gradient_times = 100
      learn_rate = 3
      T = 10
-     scale = 50
+     scale = 30
+     
      game = congestion_game(coefficient, path_number, player_number)
      for i in range(0, T) :
           print("T = ",i)
-          print("path cost : ",game.random_select_cost())
-          print("strategy : ", game.update_strategy(gradient_times, learn_rate, scale))
-
+          game.random_select_cost()
+          game.update_strategy(gradient_times, learn_rate, scale)
 
 
