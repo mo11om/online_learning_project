@@ -3,8 +3,11 @@ import random
 import select_path
 
 class player :
+     
+          # create player  possibility martrix according  num of path
+          # default possibility of every road is 1/pathnum eg..[1/3,1/3,1/3] for path is 3
+
      def  create_random(self) : #romdom crate posssibility
-          # print(self.path_num)
           tmp = np.zeros ((1,self.path_num-1))
           rdtmp = 0
           total_num = self.path_num-1
@@ -24,31 +27,40 @@ class player :
           return tmp
 
      def __init__(self, path_num) : 
-          # create player  possibility martrix according  num of path
-          # default possibility of every road is 1/pathnum eg..[1/3,1/3,1/3] for path is 3
+         
           self.path_num = path_num
           self.probability = np.ones(path_num)/path_num
           self.estimate_probability = np.ones(path_num)/path_num
           # self.probability = self.create_random()     
-     def get_probability (self) : #[poss1 , poss2, poss3]
-          return self.probability
+     # def get_probability (self) : #[poss1 , poss2, poss3]
+     #      return self.probability
 
 
-class all_player :
+class all_player ():
+     
+     #all player get into a np_array 
+
+
+
      def __init__(self, player_num, path_num) :
+          
           self.players_strategy = list()
-          self.players_estimate = list()
+          # self.players_estimate = list()
           self.player_num = player_num
           for i in range(player_num) : 
                self.players_strategy .append(player(path_num)) 
           self.players_strategy = np.asarray(self.players_strategy)
 
-     def all_player_probability(self) : 
-          for i in range(self.player_num) :
-             print(i,self.players_strategy[i].get_probability())
+     # def all_player_probability(self) : 
+     #      for i in range(self.player_num) :
+     #         print(i,self.players_strategy[i].get_probability())
 
 
 class congestion_game(all_player) :
+     #selcet path according path possibility for everyone
+     #  
+
+
      def __init__(self,coefficient,path_num,player_num) : 
           self.cost_func = list()
           self.path_num = path_num
@@ -57,8 +69,8 @@ class congestion_game(all_player) :
           for i in coefficient :
                self.cost_func.append(np.poly1d(i))
      
-     def get_cost_func (self) :
-          return self.cost_func
+     # def get_cost_func (self) :
+     #      return self.cost_func
      
      def random_select_cost(self) : 
           total_path_select = {new_list: [] for new_list in range(self.path_num)} #creat empty dict => {0:[], 1:[], 2:[]}
@@ -82,6 +94,9 @@ class congestion_game(all_player) :
           for i in range(self.player_num) :
                self.players_strategy[i].estimate_probability = select_path.refresh_strategy(self.path_cost, self.players_strategy[i].probability, times, learn_rate, scale)          
                print("player ", i, " estimate strategy : ",  self.players_strategy[i].estimate_probability) 
+
+
+
 if __name__ == '__main__' :
      coefficient =[[2.2,3], [1,0.3],  [0.6,5], [3,2]]
      player_number = 6
