@@ -24,6 +24,8 @@ class player :
           return tmp
 
      def __init__(self, path_num) : 
+          # create player  possibility martrix according  num of path
+          # default possibility of every road is 1/pathnum eg..[1/3,1/3,1/3] for path is 3
           self.path_num = path_num
           self.probability = np.ones(path_num)/path_num
           self.estimate_probability = np.ones(path_num)/path_num
