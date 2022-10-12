@@ -15,7 +15,7 @@ def panning(strategy, scale) : #strategy must be a np.array!!
     strategy = strategy/scale
     return strategy 
     
-def  refresh_strategy(past_cost , past_strategy, times, learn_rate, scale) :
+def  update_strategy(past_cost , past_strategy, times, learn_rate, scale) :
     strategy = np.zeros(len(past_strategy))
     gradient = np.zeros(len(past_strategy))
     for i in range(times): #moving times 
