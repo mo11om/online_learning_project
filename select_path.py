@@ -1,31 +1,30 @@
 import numpy as np
-def panning(strategy) :
+def panning(strategy, scale) : #strategy must be a np.array!!
     sum_ = 0
     sum_ = sum(strategy)
-    range_ = 1 - sum_/len(strategy)
+    range_ = scale - sum_/len(strategy)
     strategy = strategy + range_
     positive_sum = sum([i for i in strategy if i > 0])
     positive_number = len([i for i in strategy if i > 0])
-    while(positive_sum != 1) :#float problem
-        range_ = (1 - positive_sum)/positive_number
+    while  abs(positive_sum - scale) > 0.01  :
+        range_ = (scale - positive_sum)/positive_number
         strategy = strategy + range_
         positive_sum = sum([i for i in strategy if i > 0])
         positive_number = len([i for i in strategy if i > 0])
-    return strategy
-
+    strategy[strategy < 0] = 0
+    strategy = strategy/scale
+    return strategy 
     
+def  refresh_strategy(past_cost , past_strategy, times, learn_rate, scale) :
+    strategy = np.zeros(len(past_strategy))
+    gradient = np.zeros(len(past_strategy))
+    for i in range(times): #moving times 
+        gradient = past_cost + (2/learn_rate)*(strategy - past_strategy)
+        strategy = strategy - gradient
+    new_strategy = panning(strategy, scale) 
+    return new_strategy
 
-
-# def  refresh_strategy(past_cost , past_strategy, times, learn_rate)
-#      strategy = np.zeros(len(path_strategy))
-#      gradient = np.zeros(len(path_strategy))
-#      for i in range(times): #moving times 
-#         gradient = 2*strategy - 2*past_strategy + past_cost 
-#         strategy = strategy - learn_rate*gradient
-#     sum_ = sum(strategy)
-#     new_strategy = map(strategy) 
-#     return new_stratgy         
-
-
-a = panning(np.array([-1.1, 0.2, 0.4]))
-print(a)
+def get_key(val, total_path_select):
+  for key, value in total_path_select.items():
+    if val in value:
+      return key
