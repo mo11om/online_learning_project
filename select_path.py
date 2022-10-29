@@ -1,4 +1,6 @@
 import numpy as np
+from scipy.optimize import minimize
+
 def panning(strategy, scale) : #strategy must be a np.array!!
     sum_ = 0
     sum_ = sum(strategy)
@@ -24,6 +26,24 @@ def  refresh_strategy(past_cost , past_strategy, times, learn_rate, scale) :
     new_strategy = panning(strategy, scale) 
     return new_strategy
 
+def object(strategy, last_strategy, cost, learn_rate) :
+    return cost.dot(strategy.T) + (1/learn_rate)*(strategy - last_strategy).dot((strategy - last_strategy).T)
+
+def constraint(strategy) :
+    return np.sum(strategy)- 1
+
+def refresh_strategy_minimize(last_strategy, cost, learn_rate) :
+    x0 = np.full((1, len(last_strategy)), 1/len(last_strategy))
+    b = (0, 1)
+    buds = []
+    for i in range(len(last_strategy)) :
+        buds.append(b)
+    cons = [{'type' : 'eq', 'fun' : constraint}]
+    sol = minimize(fun=object, x0=x0, args=(np.array(last_strategy),
+                   np.array(cost), learn_rate), method='SLSQP', bounds=buds,
+                   constraints=cons)
+    return sol.x
+    
 def get_key(val, total_path_select):
   for key, value in total_path_select.items():
     if val in value:
