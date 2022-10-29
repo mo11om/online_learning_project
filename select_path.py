@@ -24,5 +24,7 @@ def  refresh_strategy(past_cost , past_strategy, times, learn_rate, scale) :
     new_strategy = panning(strategy, scale) 
     return new_strategy
 
-# a = panning(np.array([-0.5, -2.5]), 10)
-# print(a)
+def get_key(val, total_path_select):
+  for key, value in total_path_select.items():
+    if val in value:
+      return key
