@@ -30,18 +30,18 @@ class player :
           self.path_num = path_num
           self.probability = np.ones(path_num)/path_num
           self.estimate_probability = np.ones(path_num)/path_num
-          # self.probability = self.create_random()     
+          # self.probability = self.create_random()    
+           
      def get_probability (self) : #[prob1 , prob2, prob3]
           return self.probability
-
-
+          
 class all_player :
      def __init__(self, player_num, path_num) :
           self.players_strategy = list()
           self.players_estimate = list()
           self.player_num = player_num
           for i in range(player_num) : 
-               self.players_strategy .append(player(path_num)) 
+               self.players_strategy.append(player(path_num)) 
           self.players_strategy = np.asarray(self.players_strategy)
 
      def all_player_probability(self) : 
@@ -49,9 +49,7 @@ class all_player :
              print(i,self.players_strategy[i].get_probability())
 
 
-class congestion_game(all_player) :  
-      #selcet path according path possibility for everyone
-     # 
+class congestion_game(all_player) :
      def __init__(self,coefficient,path_num,player_num) : 
           self.cost_func = list()
           self.path_num = path_num
@@ -78,14 +76,29 @@ class congestion_game(all_player) :
 
      def update_strategy(self, times, learn_rate, scale) :
           for i in range(self.player_num) :
-               # print("check", self.players_strategy[i].probability)
-               self.players_strategy[i].probability = select_path.refresh_strategy(self.path_cost, self.players_strategy[i].probability, times, learn_rate, scale)
-               # print("player ", i, " strategy : ",  self.players_strategy[i].probability)
+               #different method to update player's strategy
+
+               # self.players_strategy[i].probability = select_path.refresh_strategy(
+               #      self.path_cost, self.players_strategy[i].probability, times, learn_rate, scale
+               #      )
+
+               self.players_strategy[i].probability = select_path.refresh_strategy_minimize(
+                    self.players_strategy[i].probability,self.path_cost, learn_rate
+                    )
+          print("player strategy : ",  self.players_strategy[i].probability) 
 
      def update_estimate_strategy(self, times, learn_rate, scale) :
           for i in range(self.player_num) :
-               self.players_strategy[i].estimate_probability = select_path.refresh_strategy(self.path_cost, self.players_strategy[i].probability, times, learn_rate, scale)          
-               print("player ", i, " estimate strategy : ",  self.players_strategy[i].estimate_probability) 
+               #different method 
+
+               # self.players_strategy[i].estimate_probability = select_path.refresh_strategy(
+               #      self.path_cost, self.players_strategy[i].probability, times, learn_rate, scale
+               #      )
+
+               self.players_strategy[i].estimate_probability = select_path.refresh_strategy_minimize(
+                    self.players_strategy[i].probability,self.path_cost, learn_rate
+                    )          
+          print("player estimate strategy : ",  self.players_strategy[0].estimate_probability) 
      
      def hindsight(self) :
           hindsight_real_diff = 0
@@ -106,22 +119,27 @@ class congestion_game(all_player) :
           return hindsight_real_diff           
 
 if __name__ == '__main__' :
-     coefficient =[[2.2,3], [1,0.3],  [0.6,5], [3,2], [2.2,3], [1,0.3],  [0.6,5], [3,2]]
-     player_number =10
+     coefficient =[[0.88, 2], [0.88, 2], [0.88, 2], [0.88, 2], [0.88, 2], [0.88, 2], [0.88, 2]]
+     player_number = 20
      path_number = len(coefficient)
      gradient_times = 100
-     learn_rate = 50
-     T = 40
-     scale = 8000000000
+     learn_rate = 20
+     T = 60
+     scale = 1
      hindsight_real_diff = []
+     everage_regret = []
      game = congestion_game(coefficient, path_number, player_number)
-     for i in range(0, T) :
-          # print("T = ",i)
+     for i in range(1, T+1) :
+          print("T : ", i)
           game.update_estimate_strategy(gradient_times, learn_rate, scale)
           game.random_select_cost()
           game.update_strategy(gradient_times, learn_rate, scale)
-          hindsight_real_diff.append(game.hindsight())
-     #print(hindsight_real_diff)
+          hight = game.hindsight()
+          hindsight_real_diff.append(hight)
+          everage_regret.append(sum(hindsight_real_diff)/i)
+     # print(hindsight_real_diff)
+     print(everage_regret)
+     
      times=[i+1 for i in range(T)]
      plt.plot(times,hindsight_real_diff,color=(255/255,100/255,100/255))
      plt.title("indicator") # title
