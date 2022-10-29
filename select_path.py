@@ -28,3 +28,10 @@ def get_key(val, total_path_select):
   for key, value in total_path_select.items():
     if val in value:
       return key
+
+def potential_function(total_path_select, cost_func) : #cost_func is a set of poly1d
+    potential_value=0
+    for path, driver in total_path_select.items() :
+        for i in range(0, len(driver)+1) :
+            potential_value = potential_value + cost_func[path](i)
+    return potential_value
