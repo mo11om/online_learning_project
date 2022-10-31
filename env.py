@@ -36,7 +36,6 @@ class player :
 class all_player :
      def __init__(self, player_num, path_num) :
           self.players_strategy = list()
-          self.players_estimate = list()
           self.player_num = player_num
           for i in range(player_num) : 
                self.players_strategy.append(player(path_num)) 
@@ -114,7 +113,7 @@ class congestion_game(all_player) :
           for number in range(self.player_num) :
                real_path = select_path.get_key(number, self.total_path_select) #本回合實際的路徑
                real_cost = self.path_cost[real_path]                           #本回合實際的cost
-               hindsight_path  = real_path                                     #後見之明最佳路徑
+                                                    
                hindsight_cost = 100000000000000000                             #後見之明最低cost
                exclude_path_select = copy.deepcopy(self.total_path_select)
                exclude_path_select[real_path].remove(number)
@@ -122,7 +121,7 @@ class congestion_game(all_player) :
                     path_cost = self.cost_func[path](len(driver)+1) #calculate path cost
                     if path_cost < hindsight_cost :
                          hindsight_cost = path_cost
-                         hindsight_path = path
+                       
                hindsight_real_diff = hindsight_real_diff + (real_cost - hindsight_cost) 
                #所有人的[真實選擇與後見之明的差異]的總和
           return hindsight_real_diff           
@@ -140,14 +139,15 @@ if __name__ == '__main__' :
      potential_value = []
      game = congestion_game(coefficient, path_number, player_number)
      for i in range(1, T+1) :
-          print("T : ", i)
+          print("T : ", i) 
+          
           game.update_estimate_strategy(gradient_times, learn_rate, scale)
           game.random_select_cost()
           game.update_strategy(gradient_times, learn_rate, scale)
           hight = game.hindsight()
           hindsight_real_diff.append(hight)
-          everage_regret.append(sum(hindsight_real_diff)/i)
-          potential_value.append()##
+          everage_regret.append(sum(hindsight_real_diff)/i)#30rounds 1~30
+          # potential_value.append()##
      # print(hindsight_real_diff)
      print(everage_regret)
      print(select_path.potential_function())

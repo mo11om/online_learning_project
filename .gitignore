@@ -1,0 +1,3 @@
+*.ipynb
+__pycache__/*
+__pycache__/select_path.cpython-310.pyc
