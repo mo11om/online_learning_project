@@ -1,4 +1,3 @@
-from turtle import color
 import numpy as np 
 import random 
 import select_path
@@ -8,18 +7,18 @@ import matplotlib.pyplot as plt
 class player :
      def  create_random(self) : #random crate propability
           # print(self.path_num)
-          tmp = np.zeros ((1,self.path_num-1))
+          tmp = np.zeros ((1, self.path_num-1))
           rdtmp = 0
-          total_num = self.path_num-1
+          total_num = self.path_num - 1
           while total_num :
-               rdtmp = random.randint(1,100)    
+               rdtmp = random.randint(1, 100)    
                if(rdtmp  in tmp[0]) :
                     continue
                tmp[0][total_num-1] = rdtmp
                total_num = total_num-1
           tmp = np.append(tmp ,np.array(100))
           tmp.sort()
-          for i in range(self.path_num-1,0,-1) : 
+          for i in range(self.path_num-1, 0, -1) : 
                if i != 0:
                     tmp [i] = tmp [i]-tmp[i-1]            
           tmp = tmp/100
@@ -34,11 +33,10 @@ class player :
            
      def get_probability (self) : #[prob1 , prob2, prob3]
           return self.probability
-          
+
 class all_player :
      def __init__(self, player_num, path_num) :
           self.players_strategy = list()
-          self.players_estimate = list()
           self.player_num = player_num
           for i in range(player_num) : 
                self.players_strategy.append(player(path_num)) 
@@ -46,16 +44,16 @@ class all_player :
 
      def all_player_probability(self) : 
           for i in range(self.player_num) :
-             print(i,self.players_strategy[i].get_probability())
-
+             print(i, self.players_strategy[i].get_probability())
 
 class congestion_game(all_player) :
-     def __init__(self,coefficient,path_num,player_num) : 
+     def __init__(self, coefficient, path_num, player_num) : 
           self.cost_func = list()
           self.path_num = path_num
           self.path_cost = np.zeros(path_num) 
           self.total_path_select = dict() #record all player's final choice
-          all_player.__init__(self, player_num = player_num, path_num = path_num)
+          
+          all_player.__init__(self, player_num=player_num, path_num=path_num)
           for i in coefficient :
                self.cost_func.append(np.poly1d(i))
      
@@ -63,9 +61,15 @@ class congestion_game(all_player) :
           return self.cost_func
      
      def random_select_cost(self) : 
-          self.total_path_select = {new_list: [] for new_list in range(self.path_num)} #creat empty dict => {0:[], 1:[], 2:[]}
+          self.total_path_select = {new_list: [] for new_list in range(self.path_num)} 
+          print("init ",self.total_path_select)
+          #creat empty dict => {0:[], 1:[], 2:[]}
           for i in range (self.player_num) :
-               choice_path = np.random.choice(a = self.path_num,size = 1,p = self.players_strategy[i].estimate_probability)
+               choice_path = np.random.choice(
+                   a=self.path_num,
+                   size=1,
+                   p=self.players_strategy[i].estimate_probability)
+
                self.total_path_select[choice_path[0]].append(i)
           print("path distribution : ", self.total_path_select)
           for path ,driver in self.total_path_select.items() :
@@ -79,12 +83,16 @@ class congestion_game(all_player) :
                #different method to update player's strategy
 
                # self.players_strategy[i].probability = select_path.refresh_strategy(
-               #      self.path_cost, self.players_strategy[i].probability, times, learn_rate, scale
-               #      )
+               #   self.path_cost, 
+               #   self.players_strategy[i].probability, 
+               #   times, 
+               #   learn_rate, 
+               #   scale)
 
                self.players_strategy[i].probability = select_path.refresh_strategy_minimize(
-                    self.players_strategy[i].probability,self.path_cost, learn_rate
-                    )
+                   self.players_strategy[i].probability,
+                   self.path_cost, 
+                   learn_rate)
           print("player strategy : ",  self.players_strategy[i].probability) 
 
      def update_estimate_strategy(self, times, learn_rate, scale) :
@@ -92,12 +100,16 @@ class congestion_game(all_player) :
                #different method 
 
                # self.players_strategy[i].estimate_probability = select_path.refresh_strategy(
-               #      self.path_cost, self.players_strategy[i].probability, times, learn_rate, scale
-               #      )
+               #     self.path_cost,
+               #     self.players_strategy[i].probability, 
+               #     times, 
+               #     learn_rate, 
+               #     scale)
 
                self.players_strategy[i].estimate_probability = select_path.refresh_strategy_minimize(
-                    self.players_strategy[i].probability,self.path_cost, learn_rate
-                    )          
+                   self.players_strategy[i].probability,
+                   self.path_cost, 
+                   learn_rate)          
           print("player estimate strategy : ",  self.players_strategy[0].estimate_probability) 
      
      def hindsight(self) :
@@ -105,7 +117,7 @@ class congestion_game(all_player) :
           for number in range(self.player_num) :
                real_path = select_path.get_key(number, self.total_path_select) #本回合實際的路徑
                real_cost = self.path_cost[real_path]                           #本回合實際的cost
-               hindsight_path  = real_path                                     #後見之明最佳路徑
+                                                    
                hindsight_cost = 100000000000000000                             #後見之明最低cost
                exclude_path_select = copy.deepcopy(self.total_path_select)
                exclude_path_select[real_path].remove(number)
@@ -113,42 +125,39 @@ class congestion_game(all_player) :
                     path_cost = self.cost_func[path](len(driver)+1) #calculate path cost
                     if path_cost < hindsight_cost :
                          hindsight_cost = path_cost
-                         hindsight_path = path
+                       
                hindsight_real_diff = hindsight_real_diff + (real_cost - hindsight_cost) 
-               #每個人的[真實選擇與後見之明的差異]的總和
+               #所有人的[真實選擇與後見之明的差異]的總和
           return hindsight_real_diff           
 
 if __name__ == '__main__' :
-     coefficient =[[0.88, 2], [0.88, 2], [0.88, 2], [0.88, 2], [0.88, 2], [0.88, 2], [0.88, 2]]
-     player_number = 20
+     coefficient =[[3,2], [4,1],[2,4],[6,0]]
+     player_number = 100
      path_number = len(coefficient)
      gradient_times = 100
-     learn_rate = 20
-     T = 60
+     learn_rate = 10
+     T = 20
      scale = 1
      hindsight_real_diff = []
      everage_regret = []
+     potential_value = []
      game = congestion_game(coefficient, path_number, player_number)
      for i in range(1, T+1) :
-          print("T : ", i)
+          print("T : ", i) 
+
           game.update_estimate_strategy(gradient_times, learn_rate, scale)
           game.random_select_cost()
           game.update_strategy(gradient_times, learn_rate, scale)
           hight = game.hindsight()
           hindsight_real_diff.append(hight)
-          everage_regret.append(sum(hindsight_real_diff)/i)
+          everage_regret.append(sum(hindsight_real_diff)/i)#30rounds 1~30
+          # potential_value.append()##
      # print(hindsight_real_diff)
      print(everage_regret)
-     
+     # print(select_path.potential_function())
      times=[i+1 for i in range(T)]
      plt.plot(times,hindsight_real_diff,color=(255/255,100/255,100/255))
      plt.title("indicator") # title
      plt.ylabel("diff") # y label
      plt.xlabel("times") # x label
      plt.show()
-
-
-
-
-     
-    
