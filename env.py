@@ -52,7 +52,7 @@ class congestion_game(all_player) :
           self.path_num = path_num
           self.path_cost = np.zeros(path_num) 
           self.total_path_select = dict() #record all player's final choice
-          
+          self.hindsight_real_diff = 0
           all_player.__init__(self, player_num=player_num, path_num=path_num)
           for i in coefficient :
                self.cost_func.append(np.poly1d(i))
@@ -62,20 +62,24 @@ class congestion_game(all_player) :
      
      def random_select_cost(self) : 
           self.total_path_select = {new_list: [] for new_list in range(self.path_num)} 
-          print("init ",self.total_path_select)
+          #print("init ",self.total_path_select)
           #creat empty dict => {0:[], 1:[], 2:[]}
           for i in range (self.player_num) :
                choice_path = np.random.choice(
                    a=self.path_num,
                    size=1,
                    p=self.players_strategy[i].estimate_probability)
+               # choice_path = np.random.choice(
+               #     a=self.path_num,
+               #     size=1,
+               #     p=[0.25, 0.25, 0.25, 0.25])
 
                self.total_path_select[choice_path[0]].append(i)
-          print("path distribution : ", self.total_path_select)
+          #print("path distribution : ", self.total_path_select)
           for path ,driver in self.total_path_select.items() :
                path_cost = self.cost_func[path](len(driver)) #calculate path cost
                self.path_cost[path] = path_cost   
-          print("path cost : ", self.path_cost)
+          #print("path cost : ", self.path_cost)
           return self.path_cost
 
      def update_strategy(self, times, learn_rate, scale) :
@@ -93,7 +97,7 @@ class congestion_game(all_player) :
                    self.players_strategy[i].probability,
                    self.path_cost, 
                    learn_rate)
-          print("player strategy : ",  self.players_strategy[i].probability) 
+          #print("player strategy : ",  self.players_strategy[i].probability) 
 
      def update_estimate_strategy(self, times, learn_rate, scale) :
           for i in range(self.player_num) :
@@ -110,10 +114,10 @@ class congestion_game(all_player) :
                    self.players_strategy[i].probability,
                    self.path_cost, 
                    learn_rate)          
-          print("player estimate strategy : ",  self.players_strategy[0].estimate_probability) 
+          #print("player estimate strategy : ",  self.players_strategy[0].estimate_probability) 
      
      def hindsight(self) :
-          hindsight_real_diff = 0
+          hindsight_real_diff=0
           for number in range(self.player_num) :
                real_path = select_path.get_key(number, self.total_path_select) #本回合實際的路徑
                real_cost = self.path_cost[real_path]                           #本回合實際的cost
@@ -126,9 +130,9 @@ class congestion_game(all_player) :
                     if path_cost < hindsight_cost :
                          hindsight_cost = path_cost
                        
-               hindsight_real_diff = hindsight_real_diff + (real_cost - hindsight_cost) 
+               hindsight_real_diff +=     (real_cost - hindsight_cost) 
                #所有人的[真實選擇與後見之明的差異]的總和
-          return hindsight_real_diff           
+          self.hindsight_real_diff  = hindsight_real_diff         
 
 if __name__ == '__main__' :
       pass

@@ -6,8 +6,8 @@ def valution():
         player_number = 100
         path_number = len(coefficient)
         gradient_times = 100
-        learn_rate = 10
-        T = 20
+        learn_rate = 0.0001
+        T = 100
         scale = 1
         hindsight_real_diff = []
         everage_regret = []
@@ -19,15 +19,18 @@ def valution():
             game.update_estimate_strategy(gradient_times, learn_rate, scale)
             game.random_select_cost()
             game.update_strategy(gradient_times, learn_rate, scale)
-            hight = game.hindsight()
-            hindsight_real_diff.append(hight)
+            game.hindsight()
+            hindsight_real_diff.append(game.hindsight_real_diff)
             everage_regret.append(sum(hindsight_real_diff)/i)#30rounds 1~30
             # potential_value.append()##
         # print(hindsight_real_diff)
         print(everage_regret)
         # print(select_path.potential_function())
+        diff_plot(T=T, real_diff=everage_regret)
+
+def diff_plot(T,real_diff ):        
         times=[i+1 for i in range(T)]
-        plt.plot(times,hindsight_real_diff,color=(255/255,100/255,100/255))
+        plt.plot(times,real_diff,color=(255/255,100/255,100/255))
         plt.title("indicator") # title
         plt.ylabel("diff") # y label
         plt.xlabel("times") # x label
