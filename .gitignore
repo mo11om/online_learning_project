@@ -1,7 +1,9 @@
 *.ipynb
 *.ipynb_checkpoints
-__pycache__/*
-*.pyc
+__pycache__*
+*__pycache__
+*.pyc*
+*cpython*
 __pycache__/select_path.cpython-310.pyc
- 
+__pycache__/select_path.cpython-39.pyc
  

@@ -4,7 +4,7 @@ import env
  
 import copy 
 
-
+ 
 
 
 # def panning(strategy, scale) : #strategy must be a np.array!!
