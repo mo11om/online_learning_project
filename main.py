@@ -18,6 +18,8 @@ def valution():
         game.  play_a_game(T,gradient_times, learn_rate, scale)
         
         diff_plot(T=T, real_diff=game.average_regret)
+        diff_plot(T=T, real_diff=game.potential_value)
+        plt.show()
 
 def diff_plot(T,real_diff ):        
         times=[i+1 for i in range(T)]
@@ -25,6 +27,6 @@ def diff_plot(T,real_diff ):
         plt.title("indicator") # title
         plt.ylabel("diff") # y label
         plt.xlabel("times") # x label
-        plt.show()
+        
 if __name__ == '__main__' :
      valution()

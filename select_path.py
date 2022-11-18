@@ -57,12 +57,7 @@ def get_key(val, total_path_select):
       return key
  
 
-def potential_function(total_path_select, cost_func) : #cost_func is a set of poly1d
-    potential_value=0
-    for path, driver in total_path_select.items() :
-        for i in range(0, len(driver)+1) :
-            potential_value = potential_value + cost_func[path](i)
-    return potential_value
+
 
 class congestion_game(env.all_player) :
      def __init__(self, coefficient, path_num, player_num) : 
@@ -71,6 +66,7 @@ class congestion_game(env.all_player) :
           self.total_path_select = dict() #record all player's final choice for each round
           self.hindsight_real_diff = 0
           self.average_regret = []
+          self.potential_value = []
           self.all_play_total_path_select=[]
           env.all_player.__init__(self, player_num=player_num, path_num=path_num) #??Q morris
           for i in coefficient :
@@ -145,10 +141,18 @@ class congestion_game(env.all_player) :
                          hindsight_cost = path_cost
                        
                self.hindsight_real_diff = self.hindsight_real_diff + (real_cost - hindsight_cost) 
+            
                #所有人的[真實選擇與後見之明的差異]的總和
+
+     def potential_function(self,total_path_select, cost_func) : #cost_func is a set of poly1d
+        potential_value=0
+        for path, driver in total_path_select.items() :
+            for i in range(0, len(driver)+1) :
+                potential_value = potential_value + cost_func[path](i)
+        return potential_value          
      def play_a_game(self,T,gradient_times, learn_rate, scale):
         hindsight_real_diff = []
-        
+        p_value=[]
         
         for i in range(1, T+1) :
             print("T : ", i) 
@@ -158,6 +162,13 @@ class congestion_game(env.all_player) :
             self.update_strategy(gradient_times, learn_rate, scale)
             self.hindsight()
             hindsight_real_diff.append(self.hindsight_real_diff)
+
             self.average_regret.append(sum(hindsight_real_diff)/i)#30rounds 1~30
+            
+            
+            
+            p_value.append( self.potential_function( self.total_path_select, self.cost_func))
+            
+            self.potential_value.append(sum(p_value)/i)#30rounds 1~30
 
 
