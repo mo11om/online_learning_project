@@ -1,37 +1,35 @@
 import numpy as np
 from scipy.optimize import minimize
-import env 
-import copy
+ 
 
-# def panning(strategy, scale) : #strategy must be a np.array!!
-#     sum_ = 0
-#     sum_ = sum(strategy)
-#     range_ = scale - sum_/len(strategy)
-#     strategy = strategy + range_
-#     positive_sum = sum([i for i in strategy if i > 0])
-#     positive_number = len([i for i in strategy if i > 0])
-#     while  abs(positive_sum - scale) > 0.01  :
-#         range_ = (scale - positive_sum)/positive_number
-#         strategy = strategy + range_
-#         positive_sum = sum([i for i in strategy if i > 0])
-#         positive_number = len([i for i in strategy if i > 0])
-#     strategy[strategy < 0] = 0
-#     strategy = strategy/scale
-#     return strategy 
+def panning(strategy, scale) : #strategy must be a np.array!!
+    sum_ = 0
+    sum_ = sum(strategy)
+    range_ = scale - sum_/len(strategy)
+    strategy = strategy + range_
+    positive_sum = sum([i for i in strategy if i > 0])
+    positive_number = len([i for i in strategy if i > 0])
+    while  abs(positive_sum - scale) > 0.01  :
+        range_ = (scale - positive_sum)/positive_number
+        strategy = strategy + range_
+        positive_sum = sum([i for i in strategy if i > 0])
+        positive_number = len([i for i in strategy if i > 0])
+    strategy[strategy < 0] = 0
+    strategy = strategy/scale
+    return strategy 
     
-# def  refresh_strategy(past_cost, past_strategy, times, learn_rate, scale) :
-#     strategy = np.zeros(len(past_strategy))
-#     gradient = np.zeros(len(past_strategy))
-#     for i in range(times): #moving times 
-#         gradient = past_cost + (2/learn_rate)*(strategy - past_strategy)
-#         strategy = strategy - gradient
-#     new_strategy = panning(strategy, scale) 
-#     return new_strategy
+def  refresh_strategy(past_cost, past_strategy, times, learn_rate, scale) :
+    strategy = np.zeros(len(past_strategy))
+    gradient = np.zeros(len(past_strategy))
+    for i in range(times): #moving times 
+        gradient = past_cost + (2/learn_rate)*(strategy - past_strategy)
+        strategy = strategy - gradient
+    new_strategy = panning(strategy, scale) 
+    return new_strategy
 
 def object(strategy, last_strategy, cost, learn_rate) :
-    expected_cost = cost.dot(strategy.T)
-    norm_distance = (1/learn_rate)*(strategy - last_strategy).dot((strategy - last_strategy).T)
-    return  expected_cost +  norm_distance
+    return cost.dot(strategy.T) + (1/learn_rate)*(strategy - last_strategy).dot((strategy - last_strategy).T)
+ 
 
 def constraint(strategy) :
     return np.sum(strategy)- 1
@@ -52,6 +50,7 @@ def get_key(val, total_path_select):
   for key, value in total_path_select.items():
     if val in value:
       return key
+ 
 
 def potential_function(total_path_select, cost_func) : #cost_func is a set of poly1d
     potential_value=0
@@ -139,4 +138,5 @@ class congestion_game(env.all_player) :
                        
                self.hindsight_real_diff = self.hindsight_real_diff + (real_cost - hindsight_cost) 
                #所有人的[真實選擇與後見之明的差異]的總和
+ 
 

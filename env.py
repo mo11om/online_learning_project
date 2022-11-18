@@ -1,6 +1,9 @@
 import numpy as np 
 import random 
+import select_path
 import copy
+ 
+ 
 
 class player :
      def  create_random(self) : #random crate propability
@@ -45,3 +48,4 @@ class all_player :
           for i in range(self.player_num) :
              print(i, self.players_strategy[i].get_probability())
 
+ 
