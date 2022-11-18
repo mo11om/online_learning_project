@@ -1,32 +1,23 @@
 import matplotlib.pyplot as plt
  
-import env
+
+import select_path
+
 def valution():
+        
         coefficient =[[3,2], [4,1],[2,4],[6,0]]
         player_number = 100
         path_number = len(coefficient)
-        gradient_times = 100
-        learn_rate = 0.0001
-        T = 100
-        scale = 1
-        hindsight_real_diff = []
-        everage_regret = []
-        potential_value = []
-        game = env. congestion_game(coefficient, path_number, player_number)
-        for i in range(1, T+1) :
-            print("T : ", i) 
+        game =  select_path. congestion_game(coefficient, path_number, player_number)
+        
 
-            game.update_estimate_strategy(gradient_times, learn_rate, scale)
-            game.random_select_cost()
-            game.update_strategy(gradient_times, learn_rate, scale)
-            game.hindsight()
-            hindsight_real_diff.append(game.hindsight_real_diff)
-            everage_regret.append(sum(hindsight_real_diff)/i)#30rounds 1~30
-            # potential_value.append()##
-        # print(hindsight_real_diff)
-        print(everage_regret)
-        # print(select_path.potential_function())
-        diff_plot(T=T, real_diff=everage_regret)
+        gradient_times = 10 
+        learn_rate = 0.0001
+        T = 10 
+        scale = 1
+        game.  play_a_game(T,gradient_times, learn_rate, scale)
+        
+        diff_plot(T=T, real_diff=game.average_regret)
 
 def diff_plot(T,real_diff ):        
         times=[i+1 for i in range(T)]

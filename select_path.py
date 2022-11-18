@@ -1,6 +1,11 @@
 import numpy as np
 from scipy.optimize import minimize
+import env
  
+import copy 
+
+
+
 
 def panning(strategy, scale) : #strategy must be a np.array!!
     sum_ = 0
@@ -65,6 +70,8 @@ class congestion_game(env.all_player) :
           self.path_cost = np.zeros(path_num) 
           self.total_path_select = dict() #record all player's final choice for each round
           self.hindsight_real_diff = 0
+          self.average_regret = []
+          self.all_play_total_path_select=[]
           env.all_player.__init__(self, player_num=player_num, path_num=path_num) #??Q morris
           for i in coefficient :
                self.cost_func.append(np.poly1d(i))
@@ -82,6 +89,7 @@ class congestion_game(env.all_player) :
                    p=self.players_strategy[i].estimate_probability)
 
                self.total_path_select[choice_path[0]].append(i)
+
           # print("path distribution : ", self.total_path_select)
           for path ,driver in self.total_path_select.items() :
                path_cost = self.cost_func[path](len(driver)) #calculate path cost
@@ -93,14 +101,14 @@ class congestion_game(env.all_player) :
           for i in range(self.player_num) :
                #different method to update player's strategy
 
-               # self.players_strategy[i].probability = select_path.refresh_strategy(
+               # self.players_strategy[i].probability =  refresh_strategy(
                #   self.path_cost, 
                #   self.players_strategy[i].probability, 
                #   times, 
                #   learn_rate, 
                #   scale)
 
-               self.players_strategy[i].probability = select_path.refresh_strategy_minimize(
+               self.players_strategy[i].probability =  refresh_strategy_minimize(
                    self.players_strategy[i].probability,
                    self.path_cost, 
                    learn_rate)
@@ -109,14 +117,14 @@ class congestion_game(env.all_player) :
           for i in range(self.player_num) :
                #different method 
 
-               # self.players_strategy[i].estimate_probability = select_path.refresh_strategy(
+               # self.players_strategy[i].estimate_probability =  refresh_strategy(
                #     self.path_cost,
                #     self.players_strategy[i].probability, 
                #     times, 
                #     learn_rate, 
                #     scale)
 
-               self.players_strategy[i].estimate_probability = select_path.refresh_strategy_minimize(
+               self.players_strategy[i].estimate_probability = refresh_strategy_minimize(
                    self.players_strategy[i].probability,
                    self.path_cost, 
                    learn_rate)          
@@ -138,5 +146,18 @@ class congestion_game(env.all_player) :
                        
                self.hindsight_real_diff = self.hindsight_real_diff + (real_cost - hindsight_cost) 
                #所有人的[真實選擇與後見之明的差異]的總和
- 
+     def play_a_game(self,T,gradient_times, learn_rate, scale):
+        hindsight_real_diff = []
+        
+        
+        for i in range(1, T+1) :
+            print("T : ", i) 
+
+            self.update_estimate_strategy(gradient_times, learn_rate, scale)
+            self.random_select_cost()
+            self.update_strategy(gradient_times, learn_rate, scale)
+            self.hindsight()
+            hindsight_real_diff.append(self.hindsight_real_diff)
+            self.average_regret.append(sum(hindsight_real_diff)/i)#30rounds 1~30
+
 
