@@ -84,10 +84,18 @@ class congestion_game(env.all_player) :
                self.total_path_select[choice_path[0]].append(i)
 
           # print("path distribution : ", self.total_path_select)
+          #print (self.total_path_select)
+          path_sum={}# [0:5,1:5]
+           
+               
+
           for path ,driver in self.total_path_select.items() :
+               path_sum[path]=(len(driver))
                path_cost = self.cost_func[path](len(driver)) #calculate path cost
                self.path_cost[path] = path_cost   
+
           # print("path cost : ", self.path_cost)
+          self.all_play_total_path_select.append(path_sum)
           return self.path_cost
 
      def update_strategy(self, times, learn_rate, scale) :
