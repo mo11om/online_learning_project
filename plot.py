@@ -1,15 +1,34 @@
-
-import matplotlib.pyplot as plt        
+import numpy as np
+import matplotlib.pyplot as plt     
+def ramdom_color():
+        col=  (np.random.random(), np.random.random(), np.random.random())   
+        print(col)
+        return  col          
 class plot():
-    def plot_diff(T,real_diff ):        
+    
+          
+    def plot_diff(T,real_diff ,line_name):        
         times=[i+1 for i in range(T)]
-        plt.plot(times,real_diff,color=(255/255,100/255,100/255))
+       
+        plt.plot(times,real_diff,color=ramdom_color(),label=line_name)
+         
+        
+    def line_show():
+        plt.legend(
+        loc='best',
+         
+         
+        )
         plt.title("indicator") # title
         plt.ylabel("diff") # y label
         plt.xlabel("times") # x label
+        plt.show()
+
     def show():
         plt.show()
         plt.clf()
+        plt.close()
+
 
     def plot_select_path(player_select_path_num):
         
@@ -18,7 +37,7 @@ class plot():
             
             names = list(times.keys())
             values = list(times.values()) 
-            plt.bar(range(len(times)), values, tick_label=names)
+            plt.bar(range(len(times)), values, tick_label=names,color=ramdom_color())
             plt.pause(0.3)
          
         

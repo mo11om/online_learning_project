@@ -21,8 +21,7 @@ def valution():
        
         game.  play_a_game(T,gradient_times, learn_rate, scale)
 
-        #print(game.all_play_total_path_select)
-        
+         
          
         plt.plot_select_path(game.all_play_total_path_select)
         plt.show()
@@ -30,10 +29,10 @@ def valution():
 
        
        
-        plt.plot_diff(T=T, real_diff=game.average_regret)
-        plt.plot_diff(T=T, real_diff=game.potential_value)
+        plt.plot_diff(T=T, real_diff=game.average_regret,line_name="average_regret")
+        plt.plot_diff(T=T, real_diff=game.potential_value,line_name="potential_value")
 
-        plt.show()
+        plt.line_show()
 
 
         
