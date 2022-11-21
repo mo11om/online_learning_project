@@ -1,12 +1,12 @@
 import numpy as np
-from scipy.optimize import minimize
+
 import env
- 
+
 import copy 
+from scipy.optimize import minimize
 
  
-
-
+ 
 # def panning(strategy, scale) : #strategy must be a np.array!!
 #     sum_ = 0
 #     sum_ = sum(strategy)
@@ -32,27 +32,6 @@ import copy
 #     new_strategy = panning(strategy, scale) 
 #     return new_strategy
 
-def object(strategy, last_strategy, cost, learn_rate) :
-    return cost.dot(strategy.T) + (1/learn_rate)*(strategy - last_strategy).dot((strategy - last_strategy).T)
- 
-
-def constraint(strategy) :
-    return np.sum(strategy)- 1
-
-def refresh_strategy_minimize(last_strategy, cost, learn_rate) :
-    x0 = np.full((1, len(last_strategy)), 1/len(last_strategy))
-    b = (0, 1)
-    buds = []
-    for i in range(len(last_strategy)) :
-        buds.append(b)
-    cons = [{'type' : 'eq', 'fun' : constraint}]
-    sol = minimize(fun=object, x0=x0, args=(np.array(last_strategy),
-                   np.array(cost), learn_rate), method='SLSQP', bounds=buds,
-                   constraints=cons)
-    return sol.x
-    
-
- 
 
 
 
@@ -69,8 +48,12 @@ class congestion_game(env.all_player) :
           for i in coefficient :
                self.cost_func.append(np.poly1d(i))
      
+
+
+
      def get_cost_func (self) :
           return self.cost_func
+     
      
      def random_select_cost(self) : 
           self.total_path_select = {new_list: [] for new_list in range(self.path_num)} 
@@ -97,8 +80,27 @@ class congestion_game(env.all_player) :
           # print("path cost : ", self.path_cost)
           self.all_play_total_path_select.append(path_sum)
           return self.path_cost
+     def object(strategy, last_strategy, cost, learn_rate) :
+          return cost.dot(strategy.T) + (1/learn_rate)*(strategy - last_strategy).dot((strategy - last_strategy).T)
+ 
 
-     def update_strategy(self, times, learn_rate, scale) :
+     def constraint(strategy) :
+          return np.sum(strategy)- 1
+
+     def refresh_strategy_minimize(last_strategy, cost, learn_rate) :
+          x0 = np.full((1, len(last_strategy)), 1/len(last_strategy))
+          b = (0, 1)
+          buds = []
+          for i in range(len(last_strategy)) :
+               buds.append(b)
+          cons = [{'type' : 'eq', 'fun' : congestion_game.constraint}]
+          sol = minimize(fun=congestion_game.object, x0=x0, args=(np.array(last_strategy),
+                         np.array(cost), learn_rate), method='SLSQP', bounds=buds,
+                         constraints=cons)
+          return sol.x
+
+
+     def update_strategy(self, times, learn_rate, scale ) :
           for i in range(self.player_num) :
                #different method to update player's strategy
 
@@ -109,12 +111,12 @@ class congestion_game(env.all_player) :
                #   learn_rate, 
                #   scale)
 
-               self.players_strategy[i].probability =  refresh_strategy_minimize(
+               self.players_strategy[i].probability =  congestion_game. refresh_strategy_minimize(
                    self.players_strategy[i].probability,
                    self.path_cost, 
                    learn_rate)
 
-     def update_estimate_strategy(self, times, learn_rate, scale) :
+     def update_estimate_strategy(self, times, learn_rate, scale ) :
           for i in range(self.player_num) :
                #different method 
 
@@ -125,7 +127,7 @@ class congestion_game(env.all_player) :
                #     learn_rate, 
                #     scale)
 
-               self.players_strategy[i].estimate_probability = refresh_strategy_minimize(
+               self.players_strategy[i].estimate_probability =  congestion_game.refresh_strategy_minimize(
                    self.players_strategy[i].probability,
                    self.path_cost, 
                    learn_rate)          
@@ -165,9 +167,9 @@ class congestion_game(env.all_player) :
         for i in range(1, T+1) :
             print("T : ", i) 
 
-            self.update_estimate_strategy(gradient_times, learn_rate, scale)
+            self.update_estimate_strategy(gradient_times, learn_rate, scale )
             self.random_select_cost()
-            self.update_strategy(gradient_times, learn_rate, scale)
+            self.update_strategy(gradient_times, learn_rate, scale )
             self.hindsight()
             hindsight_real_diff.append(self.hindsight_real_diff)
 
