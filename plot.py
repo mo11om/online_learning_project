@@ -10,8 +10,7 @@ class plot():
     def plot_diff(T,real_diff ,line_name):        
         times=[i+1 for i in range(T)]
        
-        plt.plot(times,real_diff,color=ramdom_color(),label=line_name)
-         
+        plt.plot(times,real_diff,color=ramdom_color(),label=line_name)    
         
     def line_show():
         plt.legend(
@@ -38,6 +37,12 @@ class plot():
             names = list(times.keys())
             values = list(times.values()) 
             plt.bar(range(len(times)), values, tick_label=names,color=ramdom_color())
-            plt.pause(0.3)
-         
-        
+            plt.pause(0.1)
+    def plot_prob(path_prob,T): 
+        path_prob = path_prob.T
+        times=[i+1 for i in range(T)]
+        plt.plot(times, path_prob[0],'r',label="path1")
+        plt.plot(times, path_prob[1],'y',label="path2")
+        plt.plot(times, path_prob[2],'g',label="path3")
+        plt.plot(times, path_prob[3],'b',label="path4")
+        plt.show()
