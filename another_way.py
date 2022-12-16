@@ -4,14 +4,16 @@ import numpy as np
 class congestion_game(select_path.congestion_game):
     def __init__(self, coefficient, path_num, player_num):
         super().__init__(coefficient, path_num, player_num)
-        self.hcost=np.zeros(path_num)
+         
         self.social_cost_plt=[]
 
     def h_cost(self,cost):
-        self.hcost[0]=cost[0]*2-2
-        self.hcost[1]=cost[1]*2-1
-        self.hcost[2]=cost[2]*2-4
-        self.hcost[3]=cost[3]*2-0
+        hcost=np.zeros(self.path_num)
+        hcost[0]=cost[0]*2-2
+        hcost[1]=cost[1]*2-1
+        hcost[2]=cost[2]*2-4
+        hcost[3]=cost[3]*2-0
+        return hcost
 
     # def object(strategy, last_strategy, cost, learn_rate) :
     #     return cost.dot(strategy.T) + (1/learn_rate)*(strategy - last_strategy).dot((strategy - last_strategy).T)
