@@ -44,7 +44,7 @@ class congestion_game(env.all_player) :
           self.average_regret = []
           self.potential_value = []
           self.all_play_total_path_select=[]
-          env.all_player.__init__(self, player_num=player_num, path_num=path_num) #??Q morris
+          env.all_player.__init__(self, player_num=player_num, path_num=path_num) 
           for i in coefficient :
                self.cost_func.append(np.poly1d(i))
      
@@ -102,14 +102,7 @@ class congestion_game(env.all_player) :
 
      def update_strategy(self, times, learn_rate, scale ) :
           for i in range(self.player_num) :
-               #different method to update player's strategy
-
-               # self.players_strategy[i].probability =  refresh_strategy(
-               #   self.path_cost, 
-               #   self.players_strategy[i].probability, 
-               #   times, 
-               #   learn_rate, 
-               #   scale)
+       
 
                self.players_strategy[i].probability =  congestion_game. refresh_strategy_minimize(
                    self.players_strategy[i].probability,
@@ -118,14 +111,7 @@ class congestion_game(env.all_player) :
 
      def update_estimate_strategy(self, times, learn_rate, scale ) :
           for i in range(self.player_num) :
-               #different method 
-
-               # self.players_strategy[i].estimate_probability =  refresh_strategy(
-               #     self.path_cost,
-               #     self.players_strategy[i].probability, 
-               #     times, 
-               #     learn_rate, 
-               #     scale)
+               
 
                self.players_strategy[i].estimate_probability =  congestion_game.refresh_strategy_minimize(
                    self.players_strategy[i].probability,
@@ -159,7 +145,9 @@ class congestion_game(env.all_player) :
         for path, driver in total_path_select.items() :
             for i in range(0, len(driver)+1) :
                 potential_value = potential_value + cost_func[path](i)
-        return potential_value          
+        return potential_value   
+
+
      def play_a_game(self,T,gradient_times, learn_rate, scale):
         hindsight_real_diff = []
         p_value=[]
