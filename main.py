@@ -5,13 +5,13 @@ import select_path
 import another_way
 from plot import plot as plt
 
-def valution(way:str,show:str):
+def valution(way:str,show:str ,T=100,player_number=50 ):
         gradient_times = 10 
         learn_rate = 0.0001
-        T = 10 
+        # T =100
         scale = 1
         coefficient =[[3,2], [4,1],[2,4],[6,0]]
-        player_number = 20
+        # player_number = 20
         path_number = len(coefficient)
 
        
@@ -66,5 +66,7 @@ def valution(way:str,show:str):
 if __name__ == '__main__' :
         way = input( "hindcost h social cost s both  hs ")
         show = input( " bar  b  line  l both bl ")
-        valution(way,show)
+        T:int = int(input("times"))
+        players:int = int(input("players"))
+        valution(way,show,T,players)
      
