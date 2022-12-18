@@ -44,7 +44,7 @@ class congestion_game(env.all_player) :
           self.average_regret = []
           self.potential_value = []
           self.all_play_total_path_select=[]
-          env.all_player.__init__(self, player_num=player_num, path_num=path_num) 
+          super() .__init__( player_num=player_num, path_num=path_num) 
           for i in coefficient :
                self.cost_func.append(np.poly1d(i))
      
