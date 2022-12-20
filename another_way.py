@@ -83,7 +83,7 @@ class congestion_game(select_path.congestion_game):
             
             
             
-            p_value.append( self.potential_function( self.total_path_select, self.cost_func))
+            p_value.append( self.potential_function(  ))
             
             self.potential_value.append(sum(p_value)/i)#30rounds 1~30
 

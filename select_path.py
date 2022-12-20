@@ -140,11 +140,11 @@ class congestion_game(env.all_player) :
             
                #所有人的[真實選擇與後見之明的差異]的總和
 
-     def potential_function(self,total_path_select, cost_func) : #cost_func is a set of poly1d
+     def potential_function(self ) : #cost_func is a set of poly1d
         potential_value=0
-        for path, driver in total_path_select.items() :
+        for path, driver in self.total_path_select.items() :
             for i in range(0, len(driver)+1) :
-                potential_value = potential_value + cost_func[path](i)
+                potential_value = potential_value + self.cost_func[path](i)
         return potential_value   
 
 
@@ -165,7 +165,7 @@ class congestion_game(env.all_player) :
             
             
             
-            p_value.append( self.potential_function( self.total_path_select, self.cost_func))
+            p_value.append( self.potential_function())
             
             self.potential_value.append(sum(p_value)/i)#30rounds 1~30
 
