@@ -24,15 +24,15 @@ def valution(way:str,show:str ,T=100,player_number=50 ):
         
                 game.  play_a_game(T,gradient_times, learn_rate, scale)
 
-                if show == "b":
+                if "b" in show:
                 
                         plt.plot_select_path(game.all_play_total_path_select)
                
         
 
                 
-                if show == "l":
-
+                if  "l" in show:
+                        print("line")
                         plt.plot_diff(T=T, real_diff=game.average_regret,line_name="average_regret")
                         plt.plot_diff(T=T, real_diff=game.potential_value,line_name="potential_value")
 
@@ -48,7 +48,7 @@ def valution(way:str,show:str ,T=100,player_number=50 ):
 
                 
                 if "b" in show:
-                
+                        
                         plt.plot_select_path(game.all_play_total_path_select)
                
         
@@ -64,9 +64,23 @@ def valution(way:str,show:str ,T=100,player_number=50 ):
 
         
 if __name__ == '__main__' :
-        way = input( "hindcost h social cost s both  hs ")
-        show = input( " bar  b  line  l both bl ")
-        T:int = int(input("times"))
-        players:int = int(input("players"))
-        valution(way,show,T,players)
+        # way = input( "hindcost h social cost s both  hs ")
+        # show = input( " bar  b  line  l both bl ")
+        # T:int = int(input("times"))
+        # players:int = int(input("players"))
+        arg=[]
+        file= open ("setting.txt","r")  # read setting 
+        """
+        # way  ( "hindcost h social cost s both  hs ") 
+        # show  ( " bar  b  line  l both bl ")
+        # T:int  times 
+        # players:int   players
+
+        """
+         
+         
+        arg=file.readlines()    
+        file.close()        
+        print(("l" in arg[1]))
+        valution(way=arg[0],show=arg[1],T=int(arg[2]),player_number=int(arg[3]))
      
