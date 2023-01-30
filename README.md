@@ -50,4 +50,14 @@
          * **function**
             * random_select_cost
               * from strategy to select a path  and calculate every route cost   
-            * 
+            * update_strategy
+              * update possibility disturbtion
+            *  hindsight 
+               *  calculate hindsight cost
+            *  potential_function
+               *  calculate potential value
+            *  play_a_game
+               *  update_estimate
+               * random_select_cost
+               * calculate hindsight 
+               * calculate potential value
